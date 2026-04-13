@@ -1,0 +1,175 @@
+# Casos de Uso — Sistema de Registro de Pacientes
+
+## Atores
+
+- **Usuário**
+- **Administrador**
+
+---
+
+## Casos de Uso
+
+### 1. Gerenciar Registros de Pacientes
+- **Ator:** Usuário  
+- **Descrição:** Permite cadastrar, editar, visualizar e excluir informações de pacientes no sistema.
+
+---
+
+### 2. Registrar Ocorrências
+- **Ator:** Usuário  
+- **Descrição:** Permite registrar eventos internos relacionados a pacientes ou à rotina da clínica.
+
+---
+
+### 3. Controlar Ponto
+- **Ator:** Usuário  
+- **Descrição:** Permite registrar e acompanhar o controle de ponto dos funcionários.  
+- **Relacionamento:** <<include>> Gerenciar Funcionários
+
+---
+
+### 4. Pesquisar e Filtrar Dados
+- **Ator:** Usuário  
+- **Descrição:** Permite buscar e aplicar filtros em dados do sistema para facilitar consultas e análises.
+
+---
+
+### 5. Exportar Relatórios
+- **Ator:** Usuário  
+- **Descrição:** Permite gerar relatórios a partir dos dados do sistema.  
+- **Relacionamentos:**
+  - <<include>> Exportar PDF  
+  - <<include>> Exportar Excel  
+
+---
+
+### 6. Exportar PDF
+- **Ator:** Usuário  
+- **Descrição:** Permite exportar relatórios no formato PDF.
+
+---
+
+### 7. Exportar Excel
+- **Ator:** Usuário  
+- **Descrição:** Permite exportar relatórios no formato Excel.
+
+---
+
+### 8. Realizar Backup e Restauração
+- **Ator:** Usuário  
+- **Descrição:** Permite realizar cópias de segurança dos dados e restaurá-los quando necessário.  
+- **Relacionamento:** <<include>> Exportar JSON
+
+---
+
+### 9. Exportar JSON
+- **Ator:** Usuário  
+- **Descrição:** Permite exportar dados do sistema no formato JSON, geralmente para backup ou integração.
+
+---
+
+### 10. Alterar Tema da Interface
+- **Ator:** Usuário  
+- **Descrição:** Permite personalizar a aparência do sistema.
+
+---
+
+### 11. Acessar Modo Administrativo
+- **Ator:** Administrador  
+- **Descrição:** Permite acesso às funcionalidades administrativas do sistema.  
+- **Relacionamento:** <<include>> Gerenciar Funcionários
+
+---
+
+### 12. Gerenciar Funcionários
+- **Ator:** Administrador  
+- **Descrição:** Permite cadastrar, editar e gerenciar informações dos funcionários da clínica.
+
+---# Casos de Uso — Sistema de Registro de Pacientes
+
+## Atores
+
+- **Usuário**
+- **Administrador**
+
+---
+
+## Casos de Uso
+
+### 1. Gerenciar Registros de Pacientes
+- **Ator:** Usuário  
+- **Descrição:** Permite cadastrar, editar, visualizar e excluir informações de pacientes no sistema.
+
+---
+
+### 2. Registrar Ocorrências
+- **Ator:** Usuário  
+- **Descrição:** Permite registrar eventos internos relacionados a pacientes ou à rotina da clínica.
+
+---
+
+### 3. Controlar Ponto
+- **Ator:** Usuário  
+- **Descrição:** Permite registrar e acompanhar o controle de ponto dos funcionários.  
+- **Relacionamento:** <<include>> Gerenciar Funcionários
+
+---
+
+### 4. Pesquisar e Filtrar Dados
+- **Ator:** Usuário  
+- **Descrição:** Permite buscar e aplicar filtros em dados do sistema para facilitar consultas e análises.
+
+---
+
+### 5. Exportar Relatórios
+- **Ator:** Usuário  
+- **Descrição:** Permite gerar relatórios a partir dos dados do sistema.  
+- **Relacionamentos:**
+  - <<include>> Exportar PDF  
+  - <<include>> Exportar Excel  
+
+---
+
+### 6. Exportar PDF
+- **Ator:** Usuário  
+- **Descrição:** Permite exportar relatórios no formato PDF.
+
+---
+
+### 7. Exportar Excel
+- **Ator:** Usuário  
+- **Descrição:** Permite exportar relatórios no formato Excel.
+
+---
+
+### 8. Realizar Backup e Restauração
+- **Ator:** Usuário  
+- **Descrição:** Permite realizar cópias de segurança dos dados e restaurá-los quando necessário.  
+- **Relacionamento:** <<include>> Exportar JSON
+
+---
+
+### 9. Exportar JSON
+- **Ator:** Usuário  
+- **Descrição:** Permite exportar dados do sistema no formato JSON, geralmente para backup ou integração.
+
+---
+
+### 10. Alterar Tema da Interface
+- **Ator:** Usuário  
+- **Descrição:** Permite personalizar a aparência do sistema.
+
+---
+
+### 11. Acessar Modo Administrativo
+- **Ator:** Administrador  
+- **Descrição:** Permite acesso às funcionalidades administrativas do sistema.  
+- **Relacionamento:** <<include>> Gerenciar Funcionários
+
+---
+
+### 12. Gerenciar Funcionários
+- **Ator:** Administrador  
+- **Descrição:** Permite cadastrar, editar e gerenciar informações dos funcionários da clínica.
+
+--- 
