@@ -1,0 +1,21 @@
+# ETAPA 2 — PROPOSTA DE SOLUÇÃO
+
+O sistema proposto consiste em uma plataforma distribuída de gestão clínica e agendamento, desenvolvida com o objetivo de solucionar problemas relacionados à organização interna e às altas taxas de ausência de pacientes em clínicas privadas de pequeno porte.
+
+A solução é estruturada em duas partes integradas: uma aplicação cliente, voltada para os pacientes e responsável pelo processo de agendamento de consultas e exames, e um painel administrativo, direcionado aos profissionais da clínica, como recepcionistas, administradores e médicos, permitindo o gerenciamento interno das operações.
+
+## 2. Funcionalidades Principais
+
+Dentre as funcionalidades do sistema, destaca-se o módulo de agendamento e cancelamento de consultas, que oferece uma interface intuitiva, possibilitando ao usuário marcar consultas e exames de forma simples e eficiente, além de visualizar horários disponíveis em tempo real. O sistema também permite o cancelamento de agendamentos de maneira rápida, facilitando a reorganização da agenda em situações imprevistas.
+
+Outra funcionalidade relevante é o envio de lembretes automáticos, realizados por meio de SMS, e-mail ou aplicativos de mensagem. Esse recurso tem como principal objetivo reduzir o número de faltas e cancelamentos de última hora, contribuindo para um melhor aproveitamento dos horários disponíveis.
+
+O sistema também disponibiliza um histórico de paciente em uma área autenticada, onde é possível visualizar tanto os agendamentos futuros quanto os registros de consultas anteriores, proporcionando maior controle e transparência para o usuário.
+
+No âmbito interno da clínica, o painel de recepção integrado oferece uma visão centralizada da agenda, permitindo o gerenciamento eficiente dos horários, a prevenção de conflitos de agendamento e o registro da chegada dos pacientes. Esse recurso contribui diretamente para a melhoria do fluxo de atendimento.
+
+Além disso, o sistema contempla a gestão de pacientes e exames, por meio de um cadastro unificado que armazena o histórico de consultas e possibilita o controle do fluxo de exames, garantindo maior organização e rastreabilidade das informações.
+
+Por fim, a solução inclui um módulo de gestão interna, responsável pelo controle de ponto dos funcionários e pelo registro de ocorrências internas. Essa funcionalidade promove a integração entre setores que anteriormente operavam de forma desconectada, resultando em maior eficiência administrativa e organizacional.
+
+---
