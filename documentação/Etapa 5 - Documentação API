@@ -1,39 +1,4 @@
-teocfx
-teocfx_57356
-Não perturbar
 
-teocfx [DⴹV],  — 18/03/2026, 20:06
-branch development no git de rodrigo
-Bem-vindo (ou vinda), 
-jpk1ll3r234
-. Tem pizza aí? — 20/03/2026, 19:54
-
-Acene para dizer olá!
-teocfx [DⴹV],  — 25/03/2026, 20:30
-https://github.com/Teocfx/Registro-de-Pacientes
-GitHub
-GitHub - Teocfx/Registro-de-Pacientes: Sistema desktop completo des...
-Sistema desktop completo desenvolvido em Electron para gerenciamento de registros de exames radiológicos, livro de ocorrências e controle de ponto de funcionários. A aplicação oferece uma interface...
-miau [RODO],  — 08/04/2026, 19:57
-devrobertocsf
-teocfx [DⴹV],  — 08/04/2026, 20:00
-
-jpk1ll3r234 — 11/04/2026, 19:47
-https://drive.google.com/file/d/1cyXufSLSraTPOUD1OqB8JJFKOJrbTFHs/view?usp=sharing
-https://drive.google.com/file/d/1cyXufSLSraTPOUD1OqB8JJFKOJrbTFHs/view?usp=sharing
-miau [RODO],  — 11/04/2026, 21:16
-Imagem
-miau [RODO],  — 11/04/2026, 21:27
-openapi: 3.0.0
-info:
-  title: API Registro de Pacientes
-  description: API para gerenciamento de pacientes, agendamentos e controle de ponto. FPB A3. PABLO RAMON
-  version: 1.0.0
-## Documentação da API
-
-SPOILER_documenta.yaml
-8 KB
-200 OK SUCESSO
 ﻿
 openapi: 3.0.0
 info:
