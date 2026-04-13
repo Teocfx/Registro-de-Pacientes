@@ -1,0 +1,115 @@
+# ETAPA 1 — PROBLEMA E CONTEXTO SOCIAL
+
+## 1. Problema e Contexto Social
+
+Segundo o Cadastro de Reclamações Fundamentadas do PROCON-SP (Exercício 2012), uma das principais reclamações dos consumidores de planos de saúde foi a dificuldade para marcação de consultas, procedimentos e exames. Esse cenário demonstra uma demanda recorrente da sociedade por maior eficiência no acesso aos serviços de saúde.
+
+De acordo com a regulamentação da Agência Nacional de Saúde Suplementar (ANS), existem prazos máximos para atendimento:
+- Consultas básicas: até **7 dias úteis**
+- Demais especialidades: até **14 dias úteis**
+- Procedimentos de alta complexidade: até **21 dias úteis**
+- Urgência e emergência: **atendimento imediato**
+
+No entanto, na prática, muitos usuários enfrentam atrasos, dificuldades de contato e falhas no agendamento.
+
+Entre os principais problemas identificados estão:
+- Faltas frequentes de pacientes  
+- Atrasos e cancelamentos sem aviso prévio  
+- Ausência de lembretes automáticos (SMS, e-mail ou apps de mensagem)  
+
+Além disso, sistemas manuais ou não integrados agravam a situação, gerando:
+- Conflitos de horário  
+- Sobrecarga na recepção  
+- Insatisfação de pacientes e profissionais  
+
+---
+
+## 2. Impacto nas Clínicas
+
+Além das dificuldades enfrentadas pelos pacientes, clínicas médicas também sofrem com desorganização interna.
+
+Problemas comuns incluem:
+- Uso de múltiplos sistemas desconectados  
+- Registros manuais  
+- Maior probabilidade de erros e perda de dados  
+- Inconsistências em relatórios clínicos e financeiros  
+
+Falhas técnicas como:
+- Lentidão em softwares desatualizados  
+- Falta de integração entre setores (agendamento, exames, RH, ocorrências internas)  
+
+Impactos diretos:
+- Redução da eficiência operacional  
+- Aumento de custos  
+- Perda de produtividade  
+- Dificuldade na gestão administrativa  
+
+---
+
+## 3. Demanda da Sociedade
+
+Diante desse cenário, há uma clara necessidade de soluções tecnológicas que:
+
+- Automatizem processos críticos  
+- Reduzam erros operacionais  
+- Diminuam custos administrativos  
+- Melhorem a experiência do paciente  
+
+Funcionalidades essenciais incluem:
+- Agendamento digital  
+- Registro de pacientes  
+- Controle de exames  
+- Controle de ponto de funcionários  
+- Gestão de ocorrências internas  
+
+Essas soluções são especialmente importantes para **pequenas e médias clínicas**, que não possuem acesso a sistemas robustos e caros.
+
+A sociedade demanda:
+- Maior agilidade no atendimento  
+- Transparência nos prazos  
+- Redução de faltas com lembretes automáticos  
+- Segurança no armazenamento de dados médicos  
+
+---
+
+## 4. Público-Alvo
+
+O sistema é voltado principalmente para:
+
+### Clínicas
+- Clínicas privadas de pequeno e médio porte  
+- Objetivo: reduzir custos, evitar perdas financeiras e otimizar processos  
+
+### Profissionais internos
+- Recepcionistas  
+- Secretárias  
+- Administradores  
+- Setor de Recursos Humanos  
+
+Necessidade:
+- Ferramentas integradas  
+- Facilidade de uso  
+- Otimização do fluxo de trabalho  
+
+### Pacientes
+- Agendamento mais eficiente  
+- Maior organização  
+- Transparência no atendimento  
+- Redução de filas  
+- Mais previsibilidade  
+
+---
+
+## 📚 Referências (ABNT)
+
+JUSBRASIL. *Plano de saúde: dificuldade para marcação de consultas, procedimentos e exames*. JusBrasil, [s.l.], [s.d.].  
+Disponível em: <https://www.jusbrasil.com.br/artigos/plano-de-saude-dificuldade-para-marcacao-de-consultas-procedimentos-e-exames/112158873>.  
+Acesso em: 26 fev. 2026.
+
+MEDICINA S/A. *Clínicas privadas perdem até R$ 144 mil por problemas com agendamento de consultas*. Medicina S/A, 02 set. 2024.  
+Disponível em: <https://medicinasa.com.br/agendamento-consultas/>.  
+Acesso em: 26 fev. 2026.
+
+RECLAME AQUI. *Dificuldade no agendamento de consulta, falha no atendimento e aplicativo com problemas*. Reclame AQUI, São Paulo, 2025.  
+Disponível em: <https://www.reclameaqui.com.br/sistemas-planos-de-saude-sp/dificuldade-no-agendamento-de-consulta-falha-no-atendimento-e-aplicativo-com-problemas_-wp6xxM4r5I-5ZHE/>.  
+Acesso em: 26 fev. 2026.
