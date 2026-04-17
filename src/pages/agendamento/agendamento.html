@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendamento de Exames</title>
     <link rel="stylesheet" href="../../styles/agendamento.css">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' file: data: blob: https:; style-src 'self' 'unsafe-inline' file: data: https:; img-src 'self' data: blob: file: https:;">
     <script>
         (function () {
             try {
@@ -39,7 +39,7 @@
         <section class="table-container">
             <div class="toolbar" role="region" aria-label="Ações de agendamento">
                 <div class="toolbar-group toolbar-group--primary">
-                    <button type="button" class="btn btn-primary" onclick="abrirModal('novo')">Novo Agendamento</button>
+                    <button type="button" id="btnNovoAgendamento" class="btn btn-primary" onclick="abrirModal('novo')">Novo Agendamento</button>
                     <button type="button" class="btn btn-secondary" onclick="abrirModalDisponibilidade()">Disponibilidade</button>
                     <button type="button" class="btn btn-secondary" onclick="abrirModalAgendaMedico('novo')">Agendas Médicas</button>
                     <button type="button" class="btn btn-secondary" onclick="abrirModalPerformance()">Performance</button>

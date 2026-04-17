@@ -769,7 +769,7 @@ function exportarPDF() {
       return;
     }
 
-    const doc = new jsPDF();
+    const doc = new jspdf.jsPDF();
     const registrosFiltrados = registros.filter(r => r.funcionario_id === funcionarioSelecionado);
     
     // Cabeçalho
@@ -1159,4 +1159,3 @@ function confirmarExclusao(registroId) {
     closeModal();
     filtrarPorMes();
 }
-

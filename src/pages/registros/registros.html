@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Exames v2.0</title>
     <link rel="stylesheet" href="../../styles/registros.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+    <script src="../../../node_modules/chart.js/dist/chart.umd.js"></script>
+    <script src="../../../node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="../../../node_modules/jspdf/dist/jspdf.umd.min.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' file: data: blob: https:; style-src 'self' 'unsafe-inline' file: data: https:; img-src 'self' data: blob: file: https:;">
     <script>
         // Aplicar tema antes da página ser renderizada
         (function () {
@@ -106,7 +106,7 @@
                 </div>
                 <div class="search-bar2">
 
-                    <button type="button" onclick="abrirModal('novo')" style="font-weight: 600; ">Novo Registro</button>
+                    <button type="button" id="btnNovoRegistro" onclick="abrirModal('novo')" style="font-weight: 600; ">Novo Registro</button>
 
                 </div>
                 <div class="search-bar1">

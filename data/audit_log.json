@@ -549,5 +549,100 @@
       "removidos": 0
     },
     "detalhe": "Mensagem enviada por @rodrigo"
+  },
+  {
+    "id": "1776382628216-49d660c8",
+    "at": "2026-04-16T23:37:08.216Z",
+    "acao": "chat-send",
+    "tipo": "chat",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "c4035ecbdc3c79a0467018795a094d37"
+    },
+    "resumo": {
+      "totalAntes": 0,
+      "totalDepois": 0,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Mensagem enviada por @admin"
+  },
+  {
+    "id": "1776391936165-d030ab22",
+    "at": "2026-04-17T02:12:16.165Z",
+    "acao": "salvar",
+    "tipo": "agendamentos",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "337cfcf175dfcbdd364df9dddb7b488d"
+    },
+    "resumo": {
+      "totalAntes": 3,
+      "totalDepois": 3,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de agendamentos"
+  },
+  {
+    "id": "1776391936353-52e69421",
+    "at": "2026-04-17T02:12:16.353Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "337cfcf175dfcbdd364df9dddb7b488d"
+    },
+    "resumo": {
+      "totalAntes": 53,
+      "totalDepois": 54,
+      "adicionados": 1,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1776391989631-4fe27318",
+    "at": "2026-04-17T02:13:09.631Z",
+    "acao": "salvar",
+    "tipo": "registros",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "337cfcf175dfcbdd364df9dddb7b488d"
+    },
+    "resumo": {
+      "totalAntes": 54,
+      "totalDepois": 53,
+      "adicionados": 0,
+      "removidos": 1
+    },
+    "detalhe": "Atualizacao de registros pelo agendamento"
+  },
+  {
+    "id": "1776391989798-833f2cd8",
+    "at": "2026-04-17T02:13:09.798Z",
+    "acao": "salvar",
+    "tipo": "agendamentos",
+    "actor": {
+      "username": "admin",
+      "role": "admin",
+      "nome": "Administrador",
+      "sessionId": "337cfcf175dfcbdd364df9dddb7b488d"
+    },
+    "resumo": {
+      "totalAntes": 3,
+      "totalDepois": 3,
+      "adicionados": 0,
+      "removidos": 0
+    },
+    "detalhe": "Atualizacao de agendamentos"
   }
 ]

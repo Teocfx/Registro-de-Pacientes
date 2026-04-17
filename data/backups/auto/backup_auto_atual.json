@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-26T22:23:39.384Z",
-  "appInstanceId": "DESKTOP-EB58H3F-11952-ac3ab3c9",
+  "generatedAt": "2026-04-17T02:18:17.156Z",
+  "appInstanceId": "DESKTOP-EB58H3F-109284-732dbeca",
   "snapshot": {
     "registros": [
       {
@@ -14,7 +14,9 @@
         "dataHoraExame": "2026-02-26T08:00",
         "nomeTecnico": "Ronny",
         "statusExame": "Realizado",
-        "observacoesAdicionais": ""
+        "observacoesAdicionais": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": "P000001"
       },
       {
         "id": 1772677592410,
@@ -27,7 +29,9 @@
         "dataHoraExame": "2026-03-04T09:00",
         "nomeTecnico": "Rodrigo",
         "statusExame": "Realizado",
-        "observacoesAdicionais": ""
+        "observacoesAdicionais": "",
+        "cpfPaciente": "",
+        "prontuarioPaciente": "P000005"
       },
       {
         "id": 1772083649881,
@@ -1349,8 +1353,8 @@
           "passwordHash": "f0ce14402e10257384e58ef27e93f123ba1be685a90543b18886db7fb53d9ca6",
           "active": true,
           "createdAt": "2026-03-21T01:30:41.895Z",
-          "updatedAt": "2026-03-24T01:31:36.828Z",
-          "lastLoginAt": "2026-03-24T01:31:36.828Z"
+          "updatedAt": "2026-04-16T23:32:36.779Z",
+          "lastLoginAt": "2026-04-16T23:32:36.779Z"
         },
         {
           "id": "portal-1774060757294-60ee9d",

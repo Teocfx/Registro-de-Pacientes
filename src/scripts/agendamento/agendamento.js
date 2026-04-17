@@ -66,6 +66,14 @@ let resolverConfirmacao = null;
 let resolverAviso = null;
 let contextoImpressao = null;
 
+window.addEventListener('error', (event) => {
+    console.error('Erro global em Agendamento:', event.error || event.message);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Promise rejeitada em Agendamento:', event.reason);
+});
+
 function obterContadoresConfig() {
     if (!configSistema || typeof configSistema !== 'object') configSistema = {};
     if (!configSistema.contadores || typeof configSistema.contadores !== 'object') {
@@ -248,8 +256,13 @@ function consumirProximoNumeroAcesso(ignorarAgendamentoId = null) {
 
 async function carregarConfigSistema() {
     const dados = await ipcRenderer.invoke('ler-config');
-    const v = await ipcRenderer.invoke('data-get-version', 'config');
-    dataVersions.config = Number(v?.version || 0);
+    try {
+        const v = await ipcRenderer.invoke('data-get-version', 'config');
+        dataVersions.config = Number(v?.version || 0);
+    } catch (error) {
+        console.warn('Falha ao obter versão de config:', error);
+        dataVersions.config = 0;
+    }
     configSistema = (dados && typeof dados === 'object') ? dados : {};
     obterContadoresConfig();
 }
@@ -425,27 +438,24 @@ function atualizarResumoTabela() {
 
     const termo = obterTermoBusca();
     const totalFiltrado = agendamentosFiltrados.length;
-    const totalGeral = agendamentos.length;
+    const totalGeral = obterItensTabelaAgendamento('').length;
     const sufixoSelecao = selecionado ? ' | 1 item selecionado' : '';
 
-    if (!termo) {
-        resumo.textContent = 'Digite o nome, CPF ou prontuário do paciente para exibir na tabela.';
-        return;
-    }
-
     if (totalGeral === 0) {
-        resumo.textContent = 'Nenhum agendamento cadastrado.';
+        resumo.textContent = 'Nenhum agendamento ou registro cadastrado.';
         return;
     }
 
     if (totalFiltrado === 0) {
-        resumo.textContent = totalGeral === 0
-            ? 'Nenhum agendamento cadastrado.'
-            : 'Nenhum paciente encontrado para a busca informada.';
+        resumo.textContent = termo
+            ? 'Nenhum paciente encontrado para a busca informada.'
+            : 'Nenhum item disponível para exibir.';
         return;
     }
 
-    resumo.textContent = `${totalFiltrado} paciente(s) encontrado(s)${sufixoSelecao}`;
+    resumo.textContent = termo
+        ? `${totalFiltrado} paciente(s) encontrado(s)${sufixoSelecao}`
+        : `Exibindo ${totalFiltrado} paciente(s)${sufixoSelecao}`;
 }
 
 function normalizarDatasBloqueadas(datas) {
@@ -479,8 +489,13 @@ function normalizarAgendaMedico(item, index = 0) {
 
 async function carregarMedicosAgenda() {
     const dados = await ipcRenderer.invoke('ler-medicos-agenda');
-    const v = await ipcRenderer.invoke('data-get-version', 'medicos-agenda');
-    dataVersions['medicos-agenda'] = Number(v?.version || 0);
+    try {
+        const v = await ipcRenderer.invoke('data-get-version', 'medicos-agenda');
+        dataVersions['medicos-agenda'] = Number(v?.version || 0);
+    } catch (error) {
+        console.warn('Falha ao obter versão de medicos-agenda:', error);
+        dataVersions['medicos-agenda'] = 0;
+    }
     if (Array.isArray(dados) && dados.length > 0) {
         medicosAgenda = dados.map((item, index) => normalizarAgendaMedico(item, index));
     } else {
@@ -530,8 +545,13 @@ function normalizarAgendamento(item) {
 
 async function carregarAgendamentos() {
     const dados = await ipcRenderer.invoke('ler-agendamentos');
-    const v = await ipcRenderer.invoke('data-get-version', 'agendamentos');
-    dataVersions.agendamentos = Number(v?.version || 0);
+    try {
+        const v = await ipcRenderer.invoke('data-get-version', 'agendamentos');
+        dataVersions.agendamentos = Number(v?.version || 0);
+    } catch (error) {
+        console.warn('Falha ao obter versão de agendamentos:', error);
+        dataVersions.agendamentos = 0;
+    }
     agendamentos = Array.isArray(dados) ? dados.map(normalizarAgendamento) : [];
     agendamentosFiltrados = [];
 }
@@ -549,8 +569,13 @@ async function salvarAgendamentos() {
 
 async function carregarRegistros() {
     const dados = await ipcRenderer.invoke('ler-registros');
-    const v = await ipcRenderer.invoke('data-get-version', 'registros');
-    dataVersions.registros = Number(v?.version || 0);
+    try {
+        const v = await ipcRenderer.invoke('data-get-version', 'registros');
+        dataVersions.registros = Number(v?.version || 0);
+    } catch (error) {
+        console.warn('Falha ao obter versão de registros no agendamento:', error);
+        dataVersions.registros = 0;
+    }
     registros = Array.isArray(dados)
         ? dados.map(item => {
             const legado = extrairCpfOuProntuarioLegado(item.documentoPaciente || item.pacienteDocumento || '');
@@ -579,8 +604,13 @@ async function salvarRegistros() {
 
 async function carregarPacientes() {
     const dados = await ipcRenderer.invoke('ler-pacientes');
-    const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
-    dataVersions.pacientes = Number(v?.version || 0);
+    try {
+        const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
+        dataVersions.pacientes = Number(v?.version || 0);
+    } catch (error) {
+        console.warn('Falha ao obter versão de pacientes no agendamento:', error);
+        dataVersions.pacientes = 0;
+    }
     pacientes = Array.isArray(dados)
         ? dados.map(item => {
             const legado = extrairCpfOuProntuarioLegado(item.documentoPaciente);
@@ -780,7 +810,7 @@ function renderTabela() {
     if (agendamentosFiltrados.length === 0) {
         tbody.innerHTML = `
             <tr class="empty-row">
-                <td colspan="10" class="empty-state">${termo ? 'Nenhum agendamento encontrado para a busca.' : 'Use a barra de busca para exibir os pacientes.'}</td>
+                <td colspan="10" class="empty-state">${termo ? 'Nenhum agendamento encontrado para a busca.' : 'Nenhum agendamento ou registro disponível.'}</td>
             </tr>
         `;
         atualizarResumoTabela();
@@ -987,16 +1017,27 @@ window.imprimirEspelhoSelecionado = async function() {
         body { font-family: Arial, sans-serif; margin: 24px; color: #111; }
         h1 { margin: 0 0 12px; }
         .sub { margin: 0 0 18px; color: #555; font-size: 12px; }
+        .toolbar { display: flex; gap: 10px; margin-bottom: 18px; }
+        .toolbar button { border: 0; border-radius: 6px; padding: 10px 16px; font-size: 14px; cursor: pointer; }
+        .toolbar .btn-print { background: #0d6efd; color: #fff; }
+        .toolbar .btn-close { background: #6c757d; color: #fff; }
         .bloco { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin-bottom: 14px; }
         .linha { display: grid; grid-template-columns: 180px 1fr; gap: 8px; margin-bottom: 6px; }
         .label { font-weight: 700; }
         table { width: 100%; border-collapse: collapse; margin-top: 8px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 13px; }
         th { background: #f3f3f3; }
-        @media print { body { margin: 10mm; } }
+        @media print {
+            body { margin: 10mm; }
+            .toolbar { display: none; }
+        }
     </style>
 </head>
 <body>
+    <div class="toolbar">
+        <button type="button" class="btn-print" onclick="window.print()">Imprimir</button>
+        <button type="button" class="btn-close" onclick="window.close()">Fechar</button>
+    </div>
     <h1>Espelho de Exames</h1>
     <p class="sub">Emissão: ${escapeHtml(dataEmissao)}</p>
     <div class="bloco">
@@ -1048,7 +1089,6 @@ window.imprimirEspelhoSelecionado = async function() {
     janela.document.write(html);
     janela.document.close();
     janela.focus();
-    janela.print();
 
     window.fecharModalImpressaoExames();
 };
@@ -1569,41 +1609,36 @@ function normalizarRegistroParaTabelaAgendamento(registro) {
     };
 }
 
-window.filtrarAgendamentos = function() {
-    const termo = obterTermoBusca();
-    if (!termo) {
-        agendamentosFiltrados = [];
-        selecionado = null;
-        pacienteBaseNoNovo = null;
-        renderTabela();
-        return;
-    }
-    const encontradosAgendamento = agendamentos.filter(item => {
+function obterItensTabelaAgendamento(termo = '') {
+    const termoNormalizado = String(termo || '').trim();
+    const filtrarItem = (item) => {
+        if (!termoNormalizado) return true;
         const nome = removerAcentos(item.nomePaciente || '').toLowerCase();
         const cpf = removerAcentos(item.cpfPaciente || '').toLowerCase();
         const prontuario = removerAcentos(item.prontuarioPaciente || item.documentoPaciente || '').toLowerCase();
-        return nome.includes(termo) || cpf.includes(termo) || prontuario.includes(termo);
-    });
+        return nome.includes(termoNormalizado) || cpf.includes(termoNormalizado) || prontuario.includes(termoNormalizado);
+    };
 
+    const encontradosAgendamento = agendamentos.filter(filtrarItem);
     const idsAgendamentosEncontrados = new Set(encontradosAgendamento.map(a => String(a.id)));
     const encontradosRegistro = registros
+        .filter(filtrarItem)
         .filter(r => {
-            const nome = removerAcentos(r.nomePaciente || '').toLowerCase();
-            const cpf = removerAcentos(r.cpfPaciente || '').toLowerCase();
-            const prontuario = removerAcentos(r.prontuarioPaciente || r.documentoPaciente || '').toLowerCase();
-            const bateBusca = nome.includes(termo) || cpf.includes(termo) || prontuario.includes(termo);
-            if (!bateBusca) return false;
-
             if (r.agendamentoId && idsAgendamentosEncontrados.has(String(r.agendamentoId))) return false;
             return !(r.agendamentoId && agendamentos.some(a => idsIguais(a.id, r.agendamentoId)));
         })
         .map(normalizarRegistroParaTabelaAgendamento);
 
-    agendamentosFiltrados = [...encontradosAgendamento, ...encontradosRegistro].sort((a, b) => {
+    return [...encontradosAgendamento, ...encontradosRegistro].sort((a, b) => {
         const da = new Date(a.dataHora || 0).getTime();
         const db = new Date(b.dataHora || 0).getTime();
         return db - da;
     });
+}
+
+window.filtrarAgendamentos = function() {
+    const termo = obterTermoBusca();
+    agendamentosFiltrados = obterItensTabelaAgendamento(termo);
 
     if (selecionado && !agendamentosFiltrados.some(item => item.id === selecionado.id)) {
         selecionado = null;
@@ -2294,20 +2329,25 @@ window.excluirAgendaMedico = async function() {
 ipcRenderer.on('change-theme', (event, theme) => setTheme(theme));
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await garantirAcesso(['admin', 'recepcao']);
-    carregarTema();
-    await carregarMedicosAgenda();
-    popularSelectMedicos();
+    try {
+        await garantirAcesso(['admin', 'recepcao']);
+        carregarTema();
+        await carregarMedicosAgenda();
+        popularSelectMedicos();
 
-    await Promise.all([carregarAgendamentos(), carregarRegistros(), carregarPacientes(), carregarConfigSistema()]);
+        await Promise.all([carregarAgendamentos(), carregarRegistros(), carregarPacientes(), carregarConfigSistema()]);
 
-    document.getElementById('dataAgendamento').value = obterDataHojeIso();
-    document.getElementById('cpfPaciente').addEventListener('blur', preencherPacientePorCpfOuProntuario);
-    document.getElementById('prontuarioPaciente').addEventListener('blur', preencherPacientePorCpfOuProntuario);
-    document.getElementById('pesquisa').value = '';
+        document.getElementById('dataAgendamento').value = obterDataHojeIso();
+        document.getElementById('btnNovoAgendamento')?.addEventListener('click', () => window.abrirModal('novo'));
+        document.getElementById('cpfPaciente').addEventListener('blur', preencherPacientePorCpfOuProntuario);
+        document.getElementById('prontuarioPaciente').addEventListener('blur', preencherPacientePorCpfOuProntuario);
+        document.getElementById('pesquisa').value = '';
 
-    atualizarHorariosDisponiveisInterno();
-    renderListaMedicosAgenda();
-    window.filtrarAgendamentos();
+        atualizarHorariosDisponiveisInterno();
+        renderListaMedicosAgenda();
+        window.filtrarAgendamentos();
+    } catch (error) {
+        console.error('Falha ao inicializar módulo de agendamento:', error);
+        alert(`Erro ao inicializar Agendamento: ${error.message}`);
+    }
 });
-

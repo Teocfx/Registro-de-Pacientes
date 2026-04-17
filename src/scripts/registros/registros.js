@@ -26,6 +26,14 @@ let resizeTimer = null;
 let sessaoAtual = null;
 const dataVersions = { registros: 0, pacientes: 0 };
 
+window.addEventListener('error', (event) => {
+    console.error('Erro global em Registros:', event.error || event.message);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Promise rejeitada em Registros:', event.reason);
+});
+
 // Adicionar estas variÃ¡veis no inÃ­cio do arquivo
  // NÃºmero de registros exibidos inicialmente
 let registrosAtuais = []; // Array com todos os registros filtrados/pesquisados
@@ -76,17 +84,20 @@ loadTheme();
 
 // FunÃ§Ãµes de InicializaÃ§Ã£o
 document.addEventListener('DOMContentLoaded', async () => {
-    sessaoAtual = await garantirAcesso(['admin', 'recepcao', 'tecnico']);
-    // Carregar tema novamente para garantir
-    loadTheme();
-    
-    await carregarPacientes();
-    await carregarRegistros();
-    setupEventListeners();
-    carregarFiltrosSalvos();
-    registrosPorPagina = calcularRegistrosPorPagina();
-    atualizarTabela();
-    atualizarBotoesAcao(); // Adicione esta linha para desabilitar os botÃµes ao iniciar
+    try {
+        sessaoAtual = await garantirAcesso(['admin', 'recepcao', 'tecnico']);
+        loadTheme();
+        await carregarPacientes();
+        await carregarRegistros();
+        setupEventListeners();
+        carregarFiltrosSalvos();
+        registrosPorPagina = calcularRegistrosPorPagina();
+        atualizarTabela();
+        atualizarBotoesAcao();
+    } catch (error) {
+        console.error('Falha ao inicializar módulo de registros:', error);
+        alert(`Erro ao inicializar Registros: ${error.message}`);
+    }
 });
 
 // O evento do botÃ£o de relatÃ³rio Ã© configurado na funÃ§Ã£o de inicializaÃ§Ã£o dos grÃ¡ficos (linha 1084)
@@ -106,6 +117,7 @@ try {
 }
 
 function setupEventListeners() {
+    document.getElementById('btnNovoRegistro')?.addEventListener('click', () => abrirModal('novo'));
     // Listeners para os botÃµes principais
     document.getElementById('searchInput').addEventListener('input', handleSearchInput);
     document.getElementById('btnLimparPesquisa').addEventListener('click', limparPesquisa);
@@ -179,9 +191,15 @@ ipcRenderer.on('start-import', () => {
 
 // FunÃ§Ãµes de ManipulaÃ§Ã£o de Registros
 async function carregarRegistros() {
-    registros = await ipcRenderer.invoke('ler-registros');
-    const v = await ipcRenderer.invoke('data-get-version', 'registros');
-    dataVersions.registros = Number(v?.version || 0);
+    const dados = await ipcRenderer.invoke('ler-registros');
+    registros = Array.isArray(dados) ? dados : [];
+    try {
+        const v = await ipcRenderer.invoke('data-get-version', 'registros');
+        dataVersions.registros = Number(v?.version || 0);
+    } catch (error) {
+        console.warn('Falha ao obter versão de registros:', error);
+        dataVersions.registros = 0;
+    }
     registros = registros.map(normalizarRegistro);
     registrosFiltrados = [...registros];
     atualizarTabela();
@@ -215,9 +233,15 @@ async function salvarRegistros() {
 }
 
 async function carregarPacientes() {
-    pacientes = await ipcRenderer.invoke('ler-pacientes');
-    const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
-    dataVersions.pacientes = Number(v?.version || 0);
+    const dados = await ipcRenderer.invoke('ler-pacientes');
+    pacientes = Array.isArray(dados) ? dados : [];
+    try {
+        const v = await ipcRenderer.invoke('data-get-version', 'pacientes');
+        dataVersions.pacientes = Number(v?.version || 0);
+    } catch (error) {
+        console.warn('Falha ao obter versão de pacientes:', error);
+        dataVersions.pacientes = 0;
+    }
     if (!Array.isArray(pacientes)) {
         pacientes = [];
         return;
@@ -524,34 +548,53 @@ function resetPaginacao() {
 function abrirModal(tipo) {
     const modal = document.getElementById('modalForm');
     const form = document.getElementById('formExame');
+    const modalTitle = document.getElementById('modalTitle');
+    const nomePacienteInput = document.getElementById('nomePaciente');
+    const cpfPacienteInput = document.getElementById('cpfPaciente');
+    const prontuarioPacienteInput = document.getElementById('prontuarioPaciente');
+    const telefonePacienteInput = document.getElementById('telefonePaciente');
+    const dataNascimentoPacienteInput = document.getElementById('dataNascimentoPaciente');
+    const enderecoPacienteInput = document.getElementById('enderecoPaciente');
+    const planoPacienteInput = document.getElementById('planoPaciente');
+    const modalidadeInput = document.getElementById('modalidade');
+    const observacoesInput = document.getElementById('observacoes');
+    const numeroAcessoInput = document.getElementById('numeroAcesso');
+    const dataHoraExameInput = document.getElementById('dataHoraExame');
+    const nomeTecnicoInput = document.getElementById('nomeTecnico');
+    const statusExameInput = document.getElementById('statusExame');
+
+    if (!modal || !form || !modalTitle || !prontuarioPacienteInput || !numeroAcessoInput) {
+        console.error('Estrutura do modal de registros não encontrada.');
+        return;
+    }
     
     if (tipo === 'novo') {
         registroSelecionado = null;
         limparCampos();
-        form.prontuarioPaciente.value = obterProximoProntuarioRegistros();
-        form.numeroAcesso.value = obterProximoNumeroAcessoRegistros();
-        document.getElementById('modalTitle').textContent = 'Novo Registro';
+        prontuarioPacienteInput.value = obterProximoProntuarioRegistros();
+        numeroAcessoInput.value = obterProximoNumeroAcessoRegistros();
+        modalTitle.textContent = 'Novo Registro';
     } else if (tipo === 'editar' && registroSelecionado) {
-        form.nomePaciente.value = registroSelecionado.nomePaciente;
-        form.cpfPaciente.value = registroSelecionado.cpfPaciente || '';
-        form.prontuarioPaciente.value = registroSelecionado.prontuarioPaciente || registroSelecionado.documentoPaciente || '';
-        form.modalidade.value = registroSelecionado.modalidade;
-        form.observacoes.value = registroSelecionado.observacoes;
-        form.numeroAcesso.value = registroSelecionado.numeroAcesso;
-        form.dataHoraExame.value = registroSelecionado.dataHoraExame;
-        form.nomeTecnico.value = registroSelecionado.nomeTecnico;
-        form.statusExame.value = registroSelecionado.statusExame || 'Agendado';
+        if (nomePacienteInput) nomePacienteInput.value = registroSelecionado.nomePaciente;
+        if (cpfPacienteInput) cpfPacienteInput.value = registroSelecionado.cpfPaciente || '';
+        prontuarioPacienteInput.value = registroSelecionado.prontuarioPaciente || registroSelecionado.documentoPaciente || '';
+        if (modalidadeInput) modalidadeInput.value = registroSelecionado.modalidade;
+        if (observacoesInput) observacoesInput.value = registroSelecionado.observacoes;
+        numeroAcessoInput.value = registroSelecionado.numeroAcesso;
+        if (dataHoraExameInput) dataHoraExameInput.value = registroSelecionado.dataHoraExame;
+        if (nomeTecnicoInput) nomeTecnicoInput.value = registroSelecionado.nomeTecnico;
+        if (statusExameInput) statusExameInput.value = registroSelecionado.statusExame || 'Agendado';
 
         const paciente = pacientes.find(p =>
             p.id === registroSelecionado.pacienteId ||
             String(p.prontuarioPaciente || p.documentoPaciente || '').toLowerCase() === String(registroSelecionado.prontuarioPaciente || registroSelecionado.documentoPaciente || '').toLowerCase()
         );
-        form.cpfPaciente.value = form.cpfPaciente.value || paciente?.cpfPaciente || '';
-        form.telefonePaciente.value = paciente?.telefonePaciente || '';
-        form.enderecoPaciente.value = paciente?.enderecoPaciente || '';
-        form.planoPaciente.value = paciente?.planoPaciente || '';
-        form.dataNascimentoPaciente.value = paciente?.dataNascimentoPaciente || '';
-        document.getElementById('modalTitle').textContent = 'Editar Registro';
+        if (cpfPacienteInput) cpfPacienteInput.value = cpfPacienteInput.value || paciente?.cpfPaciente || '';
+        if (telefonePacienteInput) telefonePacienteInput.value = paciente?.telefonePaciente || '';
+        if (enderecoPacienteInput) enderecoPacienteInput.value = paciente?.enderecoPaciente || '';
+        if (planoPacienteInput) planoPacienteInput.value = paciente?.planoPaciente || '';
+        if (dataNascimentoPacienteInput) dataNascimentoPacienteInput.value = paciente?.dataNascimentoPaciente || '';
+        modalTitle.textContent = 'Editar Registro';
     }
     
     modal.classList.remove('show');
@@ -567,11 +610,14 @@ function fecharModal() {
 
 function limparCampos() {
     const form = document.getElementById('formExame');
+    const dataHoraExameInput = document.getElementById('dataHoraExame');
+    const statusExameInput = document.getElementById('statusExame');
+    const prontuarioInput = document.getElementById('prontuarioPaciente');
+    if (!form) return;
     form.reset();
-    form.dataHoraExame.value = obterDataHoraLocalAtual();
-    form.statusExame.value = 'Agendado';
-    const doc = document.getElementById('prontuarioPaciente');
-    if (doc) doc.focus();
+    if (dataHoraExameInput) dataHoraExameInput.value = obterDataHoraLocalAtual();
+    if (statusExameInput) statusExameInput.value = 'Agendado';
+    if (prontuarioInput) prontuarioInput.focus();
 }
 
 // FunÃ§Ãµes Auxiliares
@@ -1738,6 +1784,3 @@ module.exports = {
         atualizarTabela();
     }
 };
-
-
-

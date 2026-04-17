@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer: chatIpcRenderer } = require('electron');
 
 window.__sharedChatWidgetActive = true;
 
@@ -373,7 +373,7 @@ window.__sharedChatWidgetActive = true;
         const target = String(targetUsername || '').trim().toLowerCase();
         if (!target) return;
         if (!await confirmarChatModal('Excluir toda esta conversa para ambos?')) return;
-        const result = await ipcRenderer.invoke('chat-delete-conversation-both', { targetUsername: target });
+        const result = await chatIpcRenderer.invoke('chat-delete-conversation-both', { targetUsername: target });
         if (!result?.ok) {
             await avisarChatModal(result?.message || 'Nao foi possivel excluir a conversa.');
             return;
@@ -519,7 +519,7 @@ window.__sharedChatWidgetActive = true;
             button.addEventListener('click', async () => {
                 const filePath = String(button.getAttribute('data-file-path') || '').trim();
                 if (!filePath) return;
-                await ipcRenderer.invoke('chat-open-file', { path: filePath });
+                await chatIpcRenderer.invoke('chat-open-file', { path: filePath });
             });
         });
 
@@ -527,7 +527,7 @@ window.__sharedChatWidgetActive = true;
             button.addEventListener('click', async () => {
                 const id = String(button.getAttribute('data-chat-delete-id') || '').trim();
                 if (!id || !await confirmarChatModal('Excluir esta mensagem para ambos?')) return;
-                const result = await ipcRenderer.invoke('chat-delete-message', { id, mode: 'both' });
+                const result = await chatIpcRenderer.invoke('chat-delete-message', { id, mode: 'both' });
                 if (!result?.ok) return;
                 await carregarChat();
             });
@@ -537,7 +537,7 @@ window.__sharedChatWidgetActive = true;
     }
 
     async function carregarUsuariosChat() {
-        const result = await ipcRenderer.invoke('chat-users');
+        const result = await chatIpcRenderer.invoke('chat-users');
         chatUsersState = result?.ok && Array.isArray(result.users) ? result.users : [];
         renderChatUsers();
         renderListaContatosChat();
@@ -545,7 +545,7 @@ window.__sharedChatWidgetActive = true;
 
     async function carregarUsuariosOnlineChat() {
         const meuUser = String(sessaoAtual?.username || '').toLowerCase();
-        const result = await ipcRenderer.invoke('auth-list-online-users');
+        const result = await chatIpcRenderer.invoke('auth-list-online-users');
         const usernames = result?.ok && Array.isArray(result.usernames) ? result.usernames : [];
         const base = usernames.map((u) => String(u || '').toLowerCase()).filter(Boolean);
         if (meuUser) base.push(meuUser);
@@ -556,7 +556,7 @@ window.__sharedChatWidgetActive = true;
     async function carregarChat() {
         if (!sessaoAtual) return;
         const panel = el('chatPanel');
-        const result = await ipcRenderer.invoke('chat-list', { limit: 200 });
+        const result = await chatIpcRenderer.invoke('chat-list', { limit: 200 });
         if (!result?.ok) {
             if (el('chatMessages')) el('chatMessages').innerHTML = `<div class="search-status">${escapeHtml(result?.message || 'Erro ao carregar chat.')}</div>`;
             return;
@@ -569,7 +569,7 @@ window.__sharedChatWidgetActive = true;
         renderChatUnread(unread);
         if (unread > unreadAnterior && !panel?.classList.contains('active')) tocarSomNovaMensagem();
         if (panel?.classList.contains('active') && unread > 0) {
-            await ipcRenderer.invoke('chat-mark-read', { all: true });
+            await chatIpcRenderer.invoke('chat-mark-read', { all: true });
             renderChatUnread(0);
         }
     }
@@ -577,7 +577,7 @@ window.__sharedChatWidgetActive = true;
     async function enviarMensagemChat() {
         const text = String(el('chatInput')?.value || '').trim();
         if (!text && !chatPendingAttachment) return;
-        const result = await ipcRenderer.invoke('chat-send', {
+        const result = await chatIpcRenderer.invoke('chat-send', {
             text,
             toUsername: String(el('chatTargetSelect')?.value || '').trim().toLowerCase(),
             attachment: chatPendingAttachment || null
@@ -595,7 +595,7 @@ window.__sharedChatWidgetActive = true;
         definirModoChat('contacts');
         renderListaContatosChat();
         if (el('chatFab')) el('chatFab').classList.remove('has-alert');
-        carregarChat().then(() => ipcRenderer.invoke('chat-mark-read', { all: true })).catch(() => {});
+        carregarChat().then(() => chatIpcRenderer.invoke('chat-mark-read', { all: true })).catch(() => {});
     }
 
     function fecharMenuChat() {
@@ -628,7 +628,7 @@ window.__sharedChatWidgetActive = true;
             await enviarMensagemChat();
         });
         el('chatAttachBtn')?.addEventListener('click', async () => {
-            const result = await ipcRenderer.invoke('chat-pick-file');
+            const result = await chatIpcRenderer.invoke('chat-pick-file');
             if (!result?.ok || !result.attachment) return;
             chatPendingAttachment = result.attachment;
             atualizarArquivoSelecionadoChat();
@@ -642,7 +642,7 @@ window.__sharedChatWidgetActive = true;
             const targetUsername = String(el('chatTargetSelect')?.value || '').trim().toLowerCase();
             const msg = targetUsername ? 'Limpar esta conversa privada somente para voce?' : 'Limpar o chat publico somente para voce?';
             if (!await confirmarChatModal(msg)) return;
-            const result = await ipcRenderer.invoke('chat-clear-conversation-self', { targetUsername });
+            const result = await chatIpcRenderer.invoke('chat-clear-conversation-self', { targetUsername });
             if (!result?.ok) return;
             await carregarChat();
         });
@@ -678,7 +678,7 @@ window.__sharedChatWidgetActive = true;
     async function iniciar() {
         renderWidget();
         bindEvents();
-        sessaoAtual = await ipcRenderer.invoke('auth-get-session');
+        sessaoAtual = await chatIpcRenderer.invoke('auth-get-session');
         if (!sessaoAtual) return;
         await carregarUsuariosChat();
         await carregarUsuariosOnlineChat();

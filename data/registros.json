@@ -10,7 +10,9 @@
     "dataHoraExame": "2026-02-26T08:00",
     "nomeTecnico": "Ronny",
     "statusExame": "Realizado",
-    "observacoesAdicionais": ""
+    "observacoesAdicionais": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": "P000001"
   },
   {
     "id": 1772677592410,
@@ -23,7 +25,9 @@
     "dataHoraExame": "2026-03-04T09:00",
     "nomeTecnico": "Rodrigo",
     "statusExame": "Realizado",
-    "observacoesAdicionais": ""
+    "observacoesAdicionais": "",
+    "cpfPaciente": "",
+    "prontuarioPaciente": "P000005"
   },
   {
     "id": 1772083649881,

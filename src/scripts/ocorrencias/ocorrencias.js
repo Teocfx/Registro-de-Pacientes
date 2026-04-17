@@ -547,4 +547,3 @@ try {
 } catch (error) {
     console.error('Erro ao configurar listener de tema:', error);
 }
-

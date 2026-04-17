@@ -10,6 +10,17 @@ const PDFDocument = require('pdfkit');
 const XLSX = require('xlsx-js-style'); // Altere esta linha
 const { createClientPortalServer } = require('./src/scripts/clientPortalServer');
 
+const appDataRoot = path.join(app.getPath('appData'), 'RegistroDePacientes');
+const userDataPath = path.join(appDataRoot, 'user-data');
+const sessionDataPath = path.join(appDataRoot, 'session-data');
+app.setPath('userData', userDataPath);
+app.setPath('sessionData', sessionDataPath);
+
+const singleInstanceLock = app.requestSingleInstanceLock();
+if (!singleInstanceLock) {
+    app.quit();
+}
+
 let mainWindow;
 let helpWindow;
 let mongoClient;
@@ -2875,6 +2886,45 @@ function createWindow() {
     mainWindow.maximize();
     mainWindow.show();
 
+    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+        console.log(`[renderer:${level}] ${message} (${sourceId}:${line})`);
+    });
+
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+        console.error(`Falha ao carregar renderer: ${errorDescription} (${errorCode}) em ${validatedURL}`);
+    });
+
+    mainWindow.webContents.on('render-process-gone', (event, details) => {
+        console.error('Renderer finalizado inesperadamente:', details);
+    });
+
+    mainWindow.webContents.on('did-finish-load', async () => {
+        try {
+            const diagnostico = await mainWindow.webContents.executeJavaScript(`
+                ({
+                    href: window.location.href,
+                    title: document.title,
+                    readyState: document.readyState,
+                    hasRequire: typeof require,
+                    hasProcess: typeof process,
+                    hasElectronRequire: (() => {
+                        try {
+                            const electron = require('electron');
+                            return typeof electron;
+                        } catch (error) {
+                            return 'erro:' + error.message;
+                        }
+                    })(),
+                    scriptCount: document.scripts.length,
+                    bodyExists: !!document.body
+                })
+            `, true);
+            console.log('[renderer:diagnostico]', JSON.stringify(diagnostico));
+        } catch (error) {
+            console.error('Falha ao diagnosticar renderer:', error.message);
+        }
+    });
+
     const menu = Menu.buildFromTemplate([
         {
             label: 'Arquivo',
@@ -3088,6 +3138,18 @@ app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
     }
+});
+
+app.on('second-instance', () => {
+    if (!mainWindow) {
+        createWindow();
+        return;
+    }
+
+    if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+    }
+    mainWindow.focus();
 });
 
 app.on('before-quit', () => {
