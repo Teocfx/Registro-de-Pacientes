@@ -14,7 +14,11 @@
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rodrigogfernandes/)
 [![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/rodrigogfernandes1/)
 
+[![Protótipo Online](https://img.shields.io/badge/Prot%C3%B3tipo-Acessar%20Online-blue?style=for-the-badge&logo=render&logoColor=white)](https://prototype-kpqe.onrender.com)
+
 </div>
+
+> Protótipo online disponível em: [prototype-kpqe.onrender.com](https://prototype-kpqe.onrender.com)
 
 ## Sobre o Projeto
 
@@ -75,8 +79,20 @@ Registro-de-Pacientes/
 |   |   |-- registros/registros.js
 |   |   |-- ocorrencias/ocorrencias.js
 |   |   `-- ponto/ponto.js
+|   |-- lib/
+|   |   |-- registros-logic.js
+|   |   |-- ocorrencias-logic.js
+|   |   |-- ponto-logic.js
+|   |   `-- agendamento-logic.js
 |   |-- styles/
 |   `-- assets/images/
+|-- tests/
+|   |-- registros.test.js
+|   |-- relatorio.test.js
+|   |-- utilitarios.test.js
+|   |-- ocorrencias.test.js
+|   |-- ponto.test.js
+|   `-- agendamento.test.js
 `-- data/
     |-- registros.json
     |-- pacientes.json
@@ -129,6 +145,47 @@ npm start
 ```bash
 npm run build
 ```
+
+## Testes
+
+A suite de testes usa **Jest** e exercita a lógica de negócio extraída em [`src/lib/`](src/lib/). Os módulos `src/scripts/*` consomem essa lib, de modo que o que os testes validam é exatamente o que roda no aplicativo.
+
+### Comandos
+
+```bash
+npm test               # roda todos os testes
+npm run test:watch     # modo watch (re-roda em cada save)
+npm run test:coverage  # relatório de cobertura
+```
+
+### Status atual
+
+| Métrica         | Valor      |
+| --------------- | ---------- |
+| Test Suites     | 6 passed   |
+| Tests           | 155 passed |
+| Tempo médio     | ~1.2s      |
+| Cobertura lib   | 95.97% statements · 88.27% branches · 100% functions |
+
+### O que cada arquivo cobre
+
+| Arquivo                        | Foco                                                                 |
+| ------------------------------ | -------------------------------------------------------------------- |
+| `tests/registros.test.js`      | Pesquisa, filtro avançado, ordenação, paginação, CRUD, mesclagem de importação, CPF/prontuário, sequenciais, normalização |
+| `tests/utilitarios.test.js`    | `formatarData`, `formatCsvField`, `validarFormatoImportacao`         |
+| `tests/relatorio.test.js`      | Agrupamento mensal e contagem por modalidade (gráficos)              |
+| `tests/ocorrencias.test.js`    | SLA por prioridade (Alta/Media/Baixa), prazos, normalização de status |
+| `tests/ponto.test.js`          | Cálculo de horas (com virada de dia), validação de registro          |
+| `tests/agendamento.test.js`    | Slots disponíveis, conflito de agenda, períodos, datas bloqueadas    |
+
+### Arquitetura de testes
+
+A pasta [`src/lib/`](src/lib/) reúne a lógica pura (sem DOM, sem Electron, sem disco) usada simultaneamente:
+
+- **Pelos scripts do renderer** (`src/scripts/registros/registros.js`, etc.), que importam via `require('../../lib/...')`.
+- **Pelos testes** (`tests/*.test.js`), que importam via `require('../src/lib/...')`.
+
+Isso garante uma única fonte de verdade — não há código duplicado entre teste e produção.
 
 ## Persistencia Online/Offline
 

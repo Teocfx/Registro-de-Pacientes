@@ -1,4 +1,15 @@
 ﻿const { ipcRenderer } = require('electron');
+const {
+    slugifyId,
+    removerAcentos,
+    parseHoraParaMinutos,
+    formatarMinutosParaHora,
+    obterDataLocalIso,
+    obterDatasPeriodo,
+    normalizarDatasBloqueadas,
+    conflitoDeAgenda: _conflitoDeAgendaPuro,
+    gerarHorariosDisponiveis: _gerarHorariosDisponiveisPuro
+} = require('../../lib/agendamento-logic');
 
 async function garantirAcesso(rolesPermitidos) {
     const session = await ipcRenderer.invoke('auth-get-session');
@@ -323,25 +334,7 @@ function obterDataHojeIso() {
     return new Date().toISOString().slice(0, 10);
 }
 
-function slugifyId(texto) {
-    return String(texto || '')
-        .normalize('NFD')
-        .replace(/[^\w\s-]/g, '')
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, '-');
-}
-
-function parseHoraParaMinutos(hhmm) {
-    const [h, m] = String(hhmm || '').split(':').map(Number);
-    return h * 60 + m;
-}
-
-function formatarMinutosParaHora(totalMin) {
-    const h = String(Math.floor(totalMin / 60)).padStart(2, '0');
-    const m = String(totalMin % 60).padStart(2, '0');
-    return `${h}:${m}`;
-}
+// slugifyId, parseHoraParaMinutos e formatarMinutosParaHora vêm de src/lib/agendamento-logic.js
 
 function formatarData(dataIso) {
     if (!dataIso) return '';
@@ -356,58 +349,13 @@ function formatarDataIsoParaBr(dataIso) {
     return `${dia}/${mes}/${ano}`;
 }
 
-function removerAcentos(texto) {
-    return String(texto || '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-}
+// removerAcentos vem de src/lib/agendamento-logic.js
 
 function obterTermoBusca() {
     return removerAcentos(document.getElementById('pesquisa')?.value || '').toLowerCase().trim();
 }
 
-function obterDataLocalIso(data = new Date()) {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
-}
-
-function obterDatasPeriodo(periodo, dataReferenciaIso) {
-    const base = new Date(`${dataReferenciaIso}T00:00:00`);
-    if (Number.isNaN(base.getTime())) return [];
-
-    if (periodo === 'dia') {
-        return [dataReferenciaIso];
-    }
-
-    if (periodo === 'semana') {
-        const diaSemana = base.getDay();
-        const inicioSemana = new Date(base);
-        inicioSemana.setDate(base.getDate() - diaSemana);
-        return Array.from({ length: 7 }, (_, idx) => {
-            const data = new Date(inicioSemana);
-            data.setDate(inicioSemana.getDate() + idx);
-            return obterDataLocalIso(data);
-        });
-    }
-
-    if (periodo === 'mes') {
-        const ano = base.getFullYear();
-        const mes = base.getMonth();
-        const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-        return Array.from({ length: diasNoMes }, (_, idx) => {
-            const data = new Date(ano, mes, idx + 1);
-            return obterDataLocalIso(data);
-        });
-    }
-
-    const ano = base.getFullYear();
-    return Array.from({ length: 12 }, (_, idx) => {
-        const data = new Date(ano, idx, 1);
-        return obterDataLocalIso(data);
-    });
-}
+// obterDataLocalIso e obterDatasPeriodo vêm de src/lib/agendamento-logic.js
 
 function normalizarStatusParaClasse(status) {
     return String(status || '')
@@ -458,14 +406,7 @@ function atualizarResumoTabela() {
         : `Exibindo ${totalFiltrado} paciente(s)${sufixoSelecao}`;
 }
 
-function normalizarDatasBloqueadas(datas) {
-    if (!Array.isArray(datas)) return [];
-    return [...new Set(
-        datas
-            .map(item => String(item || '').trim())
-            .filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item))
-    )].sort();
-}
+// normalizarDatasBloqueadas vem de src/lib/agendamento-logic.js
 
 function normalizarAgendaMedico(item, index = 0) {
     const idBase = slugifyId(item?.id || item?.nome || `medico-${index + 1}`) || `medico-${index + 1}`;
@@ -683,37 +624,13 @@ function obterMedicoSelecionado() {
     return obterMedicoPorId(medicoId);
 }
 
-function conflitoDeAgenda({ medicoId, dataHora, ignorarAgendamentoId = null }) {
-    return agendamentos.some(a =>
-        a.id !== ignorarAgendamentoId &&
-        a.medicoId === medicoId &&
-        a.statusExame !== 'Cancelado' &&
-        String(a.dataHora || '') === String(dataHora || '')
-    );
+// Wrappers que injetam a lista de agendamentos do escopo de módulo na lógica pura.
+function conflitoDeAgenda(args) {
+    return _conflitoDeAgendaPuro(agendamentos, args);
 }
 
 function gerarHorariosDisponiveis(medico, dataIso, agendamentoEditandoId = null) {
-    if (!medico || !dataIso) return [];
-    if (normalizarDatasBloqueadas(medico.datasBloqueadas).includes(dataIso)) return [];
-
-    const diaSemana = new Date(`${dataIso}T00:00:00`).getDay();
-    if (!medico.diasSemana.includes(diaSemana)) return [];
-
-    const inicio = parseHoraParaMinutos(medico.inicio);
-    const fim = parseHoraParaMinutos(medico.fim);
-    const slots = [];
-
-    for (let minuto = inicio; minuto + medico.intervaloMinutos <= fim; minuto += medico.intervaloMinutos) {
-        const hora = formatarMinutosParaHora(minuto);
-        const ocupado = conflitoDeAgenda({
-            medicoId: medico.id,
-            dataHora: `${dataIso}T${hora}`,
-            ignorarAgendamentoId: agendamentoEditandoId
-        });
-        if (!ocupado) slots.push(hora);
-    }
-
-    return slots;
+    return _gerarHorariosDisponiveisPuro(medico, dataIso, agendamentos, agendamentoEditandoId);
 }
 
 function atualizarHorariosDisponiveisInterno(horaPreferida = '') {

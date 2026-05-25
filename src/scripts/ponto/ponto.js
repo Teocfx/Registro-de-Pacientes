@@ -1,5 +1,9 @@
 // Importar módulos do Node.js
 const { ipcRenderer } = require('electron');
+const {
+    calcularHorasTrabalhadas: _calcularHorasTrabalhadas,
+    validarRegistro: _validarRegistroPuro
+} = require('../../lib/ponto-logic');
 
 async function garantirAcesso(rolesPermitidos) {
     const session = await ipcRenderer.invoke('auth-get-session');
@@ -753,11 +757,9 @@ function openModalEditarRegistro(registro) {
 }
 
 // Calcular diferença de horas
+// Delegado para src/lib/ponto-logic.js, que trata virada de dia e entradas inválidas.
 function calcularHorasTrabalhadas(entrada, saida) {
-  if (!entrada || !saida) return 0;
-  const [h1, m1] = entrada.split(':').map(Number);
-  const [h2, m2] = saida.split(':').map(Number);
-  return (h2 - h1) + (m2 - m1) / 60;
+  return _calcularHorasTrabalhadas(entrada, saida);
 }
 
 // Exportar PDF
@@ -1097,14 +1099,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Verificar e substituir outros alerts no código
+// Camada de UI sobre src/lib/ponto-logic.validarRegistro
 function validarRegistro(registro) {
-    if (!registro.data) {
-        showModalMessage('Data é obrigatória');
-        return false;
-    }
-    if (!registro.turno_manha_entrada && !registro.turno_tarde_entrada) {
-        showModalMessage('Pelo menos um turno deve ser preenchido');
+    const resultado = _validarRegistroPuro(registro);
+    if (!resultado.ok) {
+        showModalMessage(resultado.mensagem);
         return false;
     }
     return true;
