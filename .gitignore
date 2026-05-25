@@ -1,3 +1,6 @@
 node_modules
 
 .env
+
+# Jest test coverage reports (gerados localmente)
+coverage/
