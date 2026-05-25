@@ -1,4 +1,13 @@
 ﻿const { ipcRenderer } = require('electron');
+const {
+    formatarData,
+    cpfSomenteDigitos,
+    extrairCpfOuProntuarioLegado,
+    normalizarRegistro,
+    obterProximoProntuario,
+    obterProximoNumeroAcesso
+} = require('../../lib/registros-logic');
+
 async function garantirAcesso(rolesPermitidos) {
     const session = await ipcRenderer.invoke('auth-get-session');
     if (!session) {
@@ -272,77 +281,13 @@ async function salvarPacientes() {
     dataVersions.pacientes = Number(v?.version || dataVersions.pacientes);
 }
 
-function cpfSomenteDigitos(valor) {
-    return String(valor || '').replace(/\D/g, '');
-}
-
-function extrairCpfOuProntuarioLegado(documento) {
-    const valor = String(documento || '').trim();
-    if (!valor) return { cpfPaciente: '', prontuarioPaciente: '' };
-
-    const upper = valor.toUpperCase();
-    if (/^P\d{1,10}$/.test(upper)) {
-        return { cpfPaciente: '', prontuarioPaciente: upper };
-    }
-
-    const cpf = cpfSomenteDigitos(valor);
-    if (cpf.length === 11) {
-        return { cpfPaciente: cpf, prontuarioPaciente: '' };
-    }
-
-    return { cpfPaciente: '', prontuarioPaciente: upper };
-}
-
+// Wrappers que injetam o estado de módulo (pacientes/registros) na lógica pura.
 function obterProximoProntuarioRegistros() {
-    const usados = new Set();
-    [...pacientes, ...registros].forEach(item => {
-        const prontuario = String(item?.prontuarioPaciente || item?.documentoPaciente || '').trim().toUpperCase();
-        if (prontuario) usados.add(prontuario);
-    });
-
-    let seq = 1;
-    for (const valor of usados) {
-        const m = valor.match(/^P(\d{1,10})$/);
-        if (m) seq = Math.max(seq, Number(m[1]) + 1);
-    }
-
-    let candidato = `P${String(seq).padStart(6, '0')}`;
-    while (usados.has(candidato)) {
-        seq += 1;
-        candidato = `P${String(seq).padStart(6, '0')}`;
-    }
-    return candidato;
+    return obterProximoProntuario(pacientes, registros);
 }
 
 function obterProximoNumeroAcessoRegistros() {
-    const usados = new Set(registros.map(r => String(r.numeroAcesso || '').trim()).filter(Boolean));
-    let seq = 1;
-    for (const valor of usados) {
-        if (/^\d{1,12}$/.test(valor)) {
-            seq = Math.max(seq, Number(valor) + 1);
-        }
-    }
-
-    let candidato = String(seq).padStart(7, '0');
-    while (usados.has(candidato)) {
-        seq += 1;
-        candidato = String(seq).padStart(7, '0');
-    }
-    return candidato;
-}
-
-function normalizarRegistro(registro) {
-    const legado = extrairCpfOuProntuarioLegado(registro.documentoPaciente || registro.pacienteDocumento || '');
-    const prontuarioPaciente = String(registro.prontuarioPaciente || legado.prontuarioPaciente || '').trim().toUpperCase();
-    const cpfPaciente = cpfSomenteDigitos(registro.cpfPaciente || legado.cpfPaciente || '');
-    return {
-        ...registro,
-        statusExame: registro.statusExame || 'Agendado',
-        cpfPaciente,
-        prontuarioPaciente,
-        documentoPaciente: prontuarioPaciente || registro.documentoPaciente || registro.pacienteDocumento || '',
-        pacienteId: registro.pacienteId || ''
-    };
+    return obterProximoNumeroAcesso(registros);
 }
 
 function obterDataHoraLocalAtual() {
@@ -620,26 +565,7 @@ function limparCampos() {
     if (prontuarioInput) prontuarioInput.focus();
 }
 
-// FunÃ§Ãµes Auxiliares
-function formatarData(dataString) {
-    if (!dataString) return '';
-    
-    try {
-        const data = new Date(dataString);
-        if (isNaN(data.getTime())) return 'Data invÃ¡lida';
-        
-        return data.toLocaleString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    } catch (error) {
-        console.error('Erro ao formatar data:', error);
-        return 'Data invÃ¡lida';
-    }
-}
+// FunÃ§Ãµes Auxiliares (formatarData vem de src/lib/registros-logic.js)
 
 function handleRowClick(row) {
     const id = parseInt(row.dataset.id);

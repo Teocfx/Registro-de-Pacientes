@@ -1,4 +1,12 @@
 const { ipcRenderer } = require('electron');
+const {
+    toIsoDateOnly,
+    normalizarPrioridade,
+    obterStatusNormalizado,
+    calcularPrazoEfetivo,
+    calcularSla
+} = require('../../lib/ocorrencias-logic');
+
 async function garantirAcesso(rolesPermitidos) {
     const session = await ipcRenderer.invoke('auth-get-session');
     if (!session) {
@@ -23,48 +31,8 @@ let paginaAtual = 1;
 let registroAtualId = null;
 let dataVersionOcorrencias = 0;
 
-function toIsoDateOnly(value) {
-    const raw = String(value || '').trim();
-    if (!raw) return '';
-    const d = new Date(raw);
-    if (Number.isNaN(d.getTime())) return '';
-    return d.toISOString().slice(0, 10);
-}
-
-function normalizarPrioridade(valor) {
-    const v = String(valor || '').trim().toLowerCase();
-    if (v === 'alta') return 'Alta';
-    if (v === 'baixa') return 'Baixa';
-    return 'Media';
-}
-
-function calcularPrazoEfetivo(ocorrencia) {
-    const prazoDireto = toIsoDateOnly(ocorrencia?.prazo || '');
-    if (prazoDireto) return prazoDireto;
-    const dataBase = toIsoDateOnly(ocorrencia?.data || '');
-    if (!dataBase) return '';
-
-    const base = new Date(`${dataBase}T00:00:00`);
-    if (Number.isNaN(base.getTime())) return '';
-    const prioridade = normalizarPrioridade(ocorrencia?.prioridade);
-    const dias = prioridade === 'Alta' ? 1 : (prioridade === 'Baixa' ? 5 : 3);
-    base.setDate(base.getDate() + dias);
-    return base.toISOString().slice(0, 10);
-}
-
-function calcularSla(ocorrencia) {
-    const statusNorm = obterStatusNormalizado(ocorrencia?.status);
-    if (statusNorm === 'concluido') return 'Concluida';
-    const prazo = calcularPrazoEfetivo(ocorrencia);
-    if (!prazo) return 'Sem prazo';
-
-    const hoje = new Date();
-    const hojeLocal = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-    const hojeIso = hojeLocal.toISOString().slice(0, 10);
-    if (prazo < hojeIso) return 'Atrasada';
-    if (prazo === hojeIso) return 'Vence hoje';
-    return 'No prazo';
-}
+// toIsoDateOnly, normalizarPrioridade, calcularPrazoEfetivo e calcularSla
+// vêm de src/lib/ocorrencias-logic.js
 
 // Função para aplicar tema (definida no início para garantir que seja executada primeiro)
 function setTheme(theme) {
@@ -123,13 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     atualizarBotoesAcao();
 });
 
-function obterStatusNormalizado(valor) {
-    return String(valor || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim();
-}
+// obterStatusNormalizado vem de src/lib/ocorrencias-logic.js
 
 function aplicarFiltroInicialPorUrl() {
     try {
