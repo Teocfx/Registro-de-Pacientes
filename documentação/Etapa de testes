@@ -1,2 +1,12 @@
-Etapa de testes
-- https://github.com/Teocfx/Registro-de-Pacientes/tree/development/tests
+## Etapa de testes
+
+Os testes automatizados do projeto estão disponíveis na pasta abaixo:
+
+- [Visualizar testes](https://github.com/Teocfx/Registro-de-Pacientes/tree/development/tests)
+
+### Tecnologias utilizadas nos testes
+- Jest
+- Supertest
+
+### Objetivo
+Garantir o funcionamento correto das rotas, validações e operações do sistema de registro de pacientes.
