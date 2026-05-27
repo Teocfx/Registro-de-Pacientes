@@ -36,7 +36,7 @@ O sistema opera com MongoDB (Atlas ou local) e possui modo offline com backup JS
 - Roberto Carlos da Silva Figueiredo - 1362318889
 -Rodrigo Guedes Fernandes Ra 1362423958
 - Teófilo da costa Fernandes Ra-  1362321634
--
+
 
 
 ## Funcionalidades
