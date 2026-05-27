@@ -30,6 +30,15 @@ Aplicacao desktop em Electron para gestao de:
 
 O sistema opera com MongoDB (Atlas ou local) e possui modo offline com backup JSON automatico.
 
+## Membros do grupo 
+- Felipe Maciel Soares - 1362419474
+- João Pedro firmo lira da costa - 1362316447
+- Roberto Carlos da Silva Figueiredo - 1362318889
+-Rodrigo Guedes Fernandes Ra 1362423958
+- Teófilo da costa Fernandes Ra-  1362321634
+-
+
+
 ## Funcionalidades
 
 - Cadastro e edicao de pacientes com CPF e prontuario.
